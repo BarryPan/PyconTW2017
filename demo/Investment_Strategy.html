@@ -11800,6 +11800,49 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#噓文需要跟主文章相反</span>
+<span class="k">def</span> <span class="nf">change_score</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">word</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;噓&#39;</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">word</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">word</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="s1">&#39;→&#39;</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">word</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#跑情緒分析模型，如果等於0.5代表不預測，大於0.5就代表看漲，小於0.5代表看跌</span>
+<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">s</span><span class="o">=</span><span class="n">SnowNLP</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">&gt;=</span><span class="mf">0.51</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">&lt;=</span><span class="mf">0.49</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">==</span><span class="mf">0.5</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#一整年的凱衛股價、成交量變化資料處理</span>
 <span class="n">stock_price</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/5201.csv&#39;</span><span class="p">)</span>
 <span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(((</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span><span class="o">+</span><span class="mi">1911</span><span class="p">)</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">:])),</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
@@ -11815,17 +11858,6 @@ div#notebook {
 <span class="n">article_score</span><span class="o">=</span><span class="n">article_score</span><span class="p">[[</span><span class="s1">&#39;link&#39;</span><span class="p">,</span><span class="s1">&#39;score&#39;</span><span class="p">,</span><span class="s1">&#39;dt&#39;</span><span class="p">]]</span>
 <span class="n">article_score</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dt&quot;</span><span class="p">:</span><span class="s2">&quot;data_ym&quot;</span><span class="p">},</span><span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
-<span class="c1">#噓文需要跟主文章相反</span>
-<span class="k">def</span> <span class="nf">change_score</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="n">word</span><span class="p">):</span>
-    <span class="k">if</span> <span class="s1">&#39;噓&#39;</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">word</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="n">word</span><span class="o">==-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="s1">&#39;→&#39;</span> <span class="ow">in</span> <span class="n">tag</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">word</span>
-
 <span class="c1">#用留言分數左聯集文章分數，KEY用LINK</span>
 <span class="n">message_score</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">article_score</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;link&#39;</span><span class="p">)</span>
 <span class="n">message_score</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">message_score</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">change_score</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -11836,22 +11868,153 @@ div#notebook {
 <span class="n">down_pop</span><span class="o">=</span><span class="n">message_score</span><span class="p">[</span><span class="n">message_score</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span>
 <span class="n">middle_pop</span><span class="o">=</span><span class="n">message_score</span><span class="p">[</span><span class="n">message_score</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">top_pop</span><span class="o">=</span><span class="n">message_score</span><span class="p">[</span><span class="n">message_score</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>
-<span class="c1">#檢查原始數量配</span>
-<span class="k">print</span> <span class="s1">&#39;down:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">down_pop</span><span class="p">))</span>
-<span class="k">print</span> <span class="s1">&#39;middle:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">middle_pop</span><span class="p">))</span>
-<span class="k">print</span> <span class="s1">&#39;top:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_pop</span><span class="p">))</span>
 
-<span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">down_pop</span><span class="p">)</span>
-<span class="c1">#將零分轉換成1，-1</span>
-<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">s</span><span class="o">=</span><span class="n">SnowNLP</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">&gt;=</span><span class="mf">0.51</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">&lt;=</span><span class="mf">0.49</span><span class="p">:</span>
-        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">sentiments</span><span class="o">==</span><span class="mf">0.5</span><span class="p">:</span>
-        <span class="k">return</span> <span class="mi">0</span>
+<span class="c1">#只針對中立的文本做情緒分析</span>
 <span class="n">middle_pop</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">middle_pop</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c1">#將中立文本換算的結果，合併回去，成為最後</span>
+<span class="n">final_message</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">top_pop</span><span class="p">,</span><span class="n">middle_pop</span><span class="p">,</span><span class="n">down_pop</span><span class="p">])</span>
+
+<span class="c1">#產生最後分析的data_mart</span>
+<span class="n">message_dm</span><span class="o">=</span><span class="n">final_message</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;data_ym&#39;</span><span class="p">,</span><span class="s1">&#39;new&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">message_dm</span><span class="o">=</span><span class="n">message_dm</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">message</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;data_ym&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">],</span>
+                      <span class="s1">&#39;down&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
+                      <span class="s1">&#39;top&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="mf">1.0</span><span class="p">],})</span>
+<span class="n">message</span><span class="p">[</span><span class="s1">&#39;final&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]</span>
+<span class="n">message</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]</span>
+<span class="n">final</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">stock_price</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;data_ym&#39;</span><span class="p">)</span>
+<span class="n">final</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/local/lib/python2.7/site-packages/ipykernel_launcher.py:28: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[4]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>data_ym</th>
+      <th>start</th>
+      <th>amount</th>
+      <th>down</th>
+      <th>top</th>
+      <th>final</th>
+      <th>total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2016/10/03</td>
+      <td>18.20</td>
+      <td>550</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2016/10/04</td>
+      <td>21.55</td>
+      <td>8468</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2016/10/05</td>
+      <td>20.55</td>
+      <td>1331</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016/10/06</td>
+      <td>20.80</td>
+      <td>2517</td>
+      <td>26.0</td>
+      <td>25.0</td>
+      <td>-1.0</td>
+      <td>51.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2016/10/07</td>
+      <td>22.40</td>
+      <td>1945</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#日期遞延一天</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">final</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">final</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">final</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">][</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">final</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -11868,10 +12031,12 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>down:1438
-middle:2274
-top:1065
-1438
+<pre>      data_ym  start  amount  down   top  final  total
+0  2016/10/04  18.20     550   NaN   NaN    NaN    NaN
+1  2016/10/05  21.55    8468   NaN   NaN    NaN    NaN
+2  2016/10/06  20.55    1331   NaN   NaN    NaN    NaN
+3  2016/10/07  20.80    2517  26.0  25.0   -1.0   51.0
+4  2016/10/11  22.40    1945   NaN   NaN    NaN    NaN
 </pre>
 </div>
 </div>
@@ -11882,229 +12047,11 @@ top:1065
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>/usr/local/lib/python2.7/site-packages/ipykernel_launcher.py:52: SettingWithCopyWarning: 
-A value is trying to be set on a copy of a slice from a DataFrame.
-Try using .loc[row_indexer,col_indexer] = value instead
+<pre>/usr/local/lib/python2.7/site-packages/ipykernel_launcher.py:3: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame
 
 See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="n">final_message</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">top_pop</span><span class="p">,</span><span class="n">middle_pop</span><span class="p">,</span><span class="n">down_pop</span><span class="p">])</span>
-<span class="c1">#篩選上漲數量、中間數量、下跌數量</span>
-<span class="n">down_pop</span><span class="o">=</span><span class="n">final_message</span><span class="p">[</span><span class="n">final_message</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==-</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">middle_pop</span><span class="o">=</span><span class="n">final_message</span><span class="p">[</span><span class="n">final_message</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">top_pop</span><span class="o">=</span><span class="n">final_message</span><span class="p">[</span><span class="n">final_message</span><span class="p">[</span><span class="s1">&#39;new&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>
-
-<span class="k">print</span> <span class="s1">&#39;down:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">down_pop</span><span class="p">))</span>
-<span class="k">print</span> <span class="s1">&#39;middle:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">middle_pop</span><span class="p">))</span>
-<span class="k">print</span> <span class="s1">&#39;top:&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">top_pop</span><span class="p">))</span>
-
-<span class="n">message_dm</span><span class="o">=</span><span class="n">final_message</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;data_ym&#39;</span><span class="p">,</span><span class="s1">&#39;new&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">message_dm</span><span class="o">=</span><span class="n">message_dm</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-<span class="n">message</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;data_ym&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">],</span>
-                      <span class="s1">&#39;down&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="o">-</span><span class="mf">1.0</span><span class="p">],</span>
-                      <span class="s1">&#39;top&#39;</span><span class="p">:</span><span class="n">message_dm</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">][</span><span class="mf">1.0</span><span class="p">],})</span>
-<span class="n">message</span><span class="p">[</span><span class="s1">&#39;final&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]</span>
-<span class="n">message</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]</span>
-<span class="n">final</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">stock_price</span><span class="p">,</span><span class="n">message</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;data_ym&#39;</span><span class="p">)</span>
-
-<span class="c1">#交易策略買進</span>
-  <span class="c1">#宣告本金</span>
-<span class="n">money</span><span class="o">=</span><span class="mi">100000</span>
-<span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">low_limit</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">high_limit</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">x_date</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">x_price</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">y_date</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">y_price</span><span class="o">=</span><span class="p">[]</span>
-
-<span class="k">print</span> <span class="n">final</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-
-<span class="k">def</span> <span class="nf">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">start</span><span class="p">):</span>
-    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">tickets</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">money</span><span class="o">/</span><span class="p">(</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">))</span>
-    <span class="n">money</span><span class="o">=</span><span class="n">money</span><span class="o">-</span><span class="p">((</span><span class="n">start</span><span class="o">*</span><span class="n">tickets</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">*</span><span class="mf">1.006</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="n">start</span>
-
-<span class="k">def</span> <span class="nf">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">buy_money</span><span class="p">):</span>
-    <span class="n">money</span><span class="o">=</span><span class="p">(</span><span class="n">tickets</span><span class="o">*</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">+</span><span class="n">money</span>
-    <span class="k">print</span> <span class="s1">&#39;獲利金額&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">start</span><span class="o">-</span><span class="n">buy_money</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">tickets</span><span class="p">)</span>
-    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
-    <span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">return</span> <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span>
-<span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">final</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-    <span class="k">print</span> <span class="n">index</span><span class="p">,</span><span class="s2">&quot;今天開盤價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span><span class="s2">&quot;現在金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s2">&quot;現在持有張數&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="s2">&quot;買進當時股價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_money</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">tickets</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">:</span>
-        <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
-        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;買進&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
-        <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="mf">0.95</span>
-        <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="mf">1.05</span>
-        <span class="n">x_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">x_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
-        <span class="k">continue</span>
-    <span class="k">if</span> <span class="n">tickets</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">high_limit</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">low_limit</span><span class="p">):</span>
-        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;賣出&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
-        <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
-        <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>down:3122
-middle:46
-top:1575
-      data_ym  start  amount  down   top  final  total
-0  2016/10/03  18.20     550   NaN   NaN    NaN    NaN
-1  2016/10/04  21.55    8468   NaN   NaN    NaN    NaN
-2  2016/10/05  20.55    1331   NaN   NaN    NaN    NaN
-3  2016/10/06  20.80    2517  26.0  25.0   -1.0   51.0
-4  2016/10/07  22.40    1945   NaN   NaN    NaN    NaN
-0 今天開盤價18.2 現在金額100000 現在持有張數0 買進當時股價0
-1 今天開盤價21.55 現在金額100000 現在持有張數0 買進當時股價0
-2 今天開盤價20.55 現在金額100000 現在持有張數0 買進當時股價0
-3 今天開盤價20.8 現在金額100000 現在持有張數0 買進當時股價0
-2016/10/06買進 4張
-4 今天開盤價22.4 現在金額16300 現在持有張數4 買進當時股價20.8
-2016/10/07賣出 4張
-獲利金額6400.0
-5 今天開盤價22.5 現在金額105900.0 現在持有張數0 買進當時股價0
-6 今天開盤價22.05 現在金額105900.0 現在持有張數0 買進當時股價0
-7 今天開盤價24.1 現在金額105900.0 現在持有張數0 買進當時股價0
-8 今天開盤價23.45 現在金額105900.0 現在持有張數0 買進當時股價0
-9 今天開盤價24.2 現在金額105900.0 現在持有張數0 買進當時股價0
-2016/10/17買進 4張
-10 今天開盤價24.5 現在金額8519 現在持有張數4 買進當時股價24.2
-11 今天開盤價25.45 現在金額8519 現在持有張數4 買進當時股價24.2
-2016/10/19賣出 4張
-獲利金額5000.0
-12 今天開盤價25.15 現在金額110319.0 現在持有張數0 買進當時股價0
-13 今天開盤價25.3 現在金額110319.0 現在持有張數0 買進當時股價0
-2016/10/21買進 4張
-14 今天開盤價26.1 現在金額8511 現在持有張數4 買進當時股價25.3
-15 今天開盤價26.8 現在金額8511 現在持有張數4 買進當時股價25.3
-2016/10/25賣出 4張
-獲利金額6000.0
-16 今天開盤價29.55 現在金額115711.0 現在持有張數0 買進當時股價0
-17 今天開盤價31.4 現在金額115711.0 現在持有張數0 買進當時股價0
-18 今天開盤價29.5 現在金額115711.0 現在持有張數0 買進當時股價0
-19 今天開盤價29.15 現在金額115711.0 現在持有張數0 買進當時股價0
-20 今天開盤價29.95 現在金額115711.0 現在持有張數0 買進當時股價0
-21 今天開盤價29.2 現在金額115711.0 現在持有張數0 買進當時股價0
-22 今天開盤價28.9 現在金額115711.0 現在持有張數0 買進當時股價0
-2016/11/03買進 4張
-23 今天開盤價29.55 現在金額-582 現在持有張數4 買進當時股價28.9
-24 今天開盤價29.0 現在金額-582 現在持有張數4 買進當時股價28.9
-25 今天開盤價28.8 現在金額-582 現在持有張數4 買進當時股價28.9
-26 今天開盤價31.5 現在金額-582 現在持有張數4 買進當時股價28.9
-2016/11/09賣出 4張
-獲利金額10400.0
-27 今天開盤價31.8 現在金額125418.0 現在持有張數0 買進當時股價0
-2016/11/10買進 3張
-28 今天開盤價34.0 現在金額29445 現在持有張數3 買進當時股價31.8
-2016/11/11賣出 3張
-獲利金額6600.0
-29 今天開盤價34.15 現在金額131445.0 現在持有張數0 買進當時股價0
-2016/11/14買進 3張
-30 今天開盤價38.4 現在金額28380 現在持有張數3 買進當時股價34.15
-2016/11/15賣出 3張
-獲利金額12750.0
-31 今天開盤價39.45 現在金額143580.0 現在持有張數0 買進當時股價0
-2016/11/16買進 3張
-32 今天開盤價41.0 現在金額24519 現在持有張數3 買進當時股價39.45
-33 今天開盤價40.5 現在金額24519 現在持有張數3 買進當時股價39.45
-34 今天開盤價50.2 現在金額24519 現在持有張數3 買進當時股價39.45
-2016/11/21賣出 3張
-獲利金額32250.0
-35 今天開盤價48.8 現在金額175119.0 現在持有張數0 買進當時股價0
-36 今天開盤價45.0 現在金額175119.0 現在持有張數0 買進當時股價0
-2016/11/23買進 3張
-37 今天開盤價46.35 現在金額39309 現在持有張數3 買進當時股價45.0
-38 今天開盤價42.9 現在金額39309 現在持有張數3 買進當時股價45.0
-39 今天開盤價37.3 現在金額39309 現在持有張數3 買進當時股價45.0
-2016/11/28賣出 3張
-獲利金額-23100.0
-40 今天開盤價39.8 現在金額151209.0 現在持有張數0 買進當時股價0
-2016/11/29買進 3張
-41 今天開盤價41.95 現在金額31092 現在持有張數3 買進當時股價39.8
-2016/11/30賣出 3張
-獲利金額6450.0
-42 今天開盤價40.1 現在金額156942.0 現在持有張數0 買進當時股價0
-2016/12/01買進 3張
-43 今天開盤價44.0 現在金額35920 現在持有張數3 買進當時股價40.1
-2016/12/02賣出 3張
-獲利金額11700.0
-44 今天開盤價41.05 現在金額167920.0 現在持有張數0 買進當時股價0
-2016/12/05買進 4張
-45 今天開盤價42.7 現在金額2734 現在持有張數4 買進當時股價41.05
-46 今天開盤價42.5 現在金額2734 現在持有張數4 買進當時股價41.05
-47 今天開盤價46.0 現在金額2734 現在持有張數4 買進當時股價41.05
-2016/12/08賣出 4張
-獲利金額19800.0
-48 今天開盤價44.1 現在金額186734.0 現在持有張數0 買進當時股價0
-49 今天開盤價43.6 現在金額186734.0 現在持有張數0 買進當時股價0
-50 今天開盤價41.55 現在金額186734.0 現在持有張數0 買進當時股價0
-51 今天開盤價40.7 現在金額186734.0 現在持有張數0 買進當時股價0
-52 今天開盤價42.6 現在金額186734.0 現在持有張數0 買進當時股價0
-53 今天開盤價41.55 現在金額186734.0 現在持有張數0 買進當時股價0
-54 今天開盤價40.4 現在金額186734.0 現在持有張數0 買進當時股價0
-55 今天開盤價39.0 現在金額186734.0 現在持有張數0 買進當時股價0
-56 今天開盤價35.5 現在金額186734.0 現在持有張數0 買進當時股價0
-2016/12/21買進 5張
-57 今天開盤價29.9 現在金額8169 現在持有張數5 買進當時股價35.5
-2016/12/22賣出 5張
-獲利金額-28000.0
-58 今天開盤價33.0 現在金額157669.0 現在持有張數0 買進當時股價0
-2016/12/23買進 4張
-59 今天開盤價31.5 現在金額24877 現在持有張數4 買進當時股價33.0
-60 今天開盤價29.25 現在金額24877 現在持有張數4 買進當時股價33.0
-2016/12/27賣出 4張
-獲利金額-15000.0
-61 今天開盤價30.0 現在金額141877.0 現在持有張數0 買進當時股價0
-62 今天開盤價30.15 現在金額141877.0 現在持有張數0 買進當時股價0
-63 今天開盤價30.55 現在金額141877.0 現在持有張數0 買進當時股價0
-64 今天開盤價31.45 現在金額141877.0 現在持有張數0 買進當時股價0
-2017/01/03買進 4張
-65 今天開盤價31.8 現在金額15322 現在持有張數4 買進當時股價31.45
-66 今天開盤價31.25 現在金額15322 現在持有張數4 買進當時股價31.45
-67 今天開盤價30.4 現在金額15322 現在持有張數4 買進當時股價31.45
-68 今天開盤價31.45 現在金額15322 現在持有張數4 買進當時股價31.45
-69 今天開盤價30.4 現在金額15322 現在持有張數4 買進當時股價31.45
-70 今天開盤價30.05 現在金額15322 現在持有張數4 買進當時股價31.45
-71 今天開盤價30.0 現在金額15322 現在持有張數4 買進當時股價31.45
-72 今天開盤價29.8 現在金額15322 現在持有張數4 買進當時股價31.45
-2017/01/13賣出 4張
-獲利金額-6600.0
-73 今天開盤價28.1 現在金額134522.0 現在持有張數0 買進當時股價0
-74 今天開盤價24.0 現在金額134522.0 現在持有張數0 買進當時股價0
-75 今天開盤價21.1 現在金額134522.0 現在持有張數0 買進當時股價0
-76 今天開盤價21.5 現在金額134522.0 現在持有張數0 買進當時股價0
-77 今天開盤價21.7 現在金額134522.0 現在持有張數0 買進當時股價0
+  This is separate from the ipykernel package so we can avoid doing imports until
 </pre>
 </div>
 </div>
@@ -12118,11 +12065,223 @@ top:1575
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">thin_xticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">ticklabels</span><span class="p">,</span><span class="n">tick_gap</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">):</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#交易策略買進</span>
+
+<span class="n">money</span><span class="o">=</span><span class="mi">100000</span>  <span class="c1">#本金</span>
+<span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>     <span class="c1">#股票張數</span>
+<span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#當時購買金額</span>
+<span class="n">limit</span><span class="o">=</span><span class="mf">0.05</span>    <span class="c1">#設定進出門檻上下界</span>
+<span class="n">low_limit</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#獲利出場門檻</span>
+<span class="n">high_limit</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#虧損出場門檻 </span>
+<span class="n">x_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#購買的日期</span>
+<span class="n">x_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#購買價格</span>
+<span class="n">y_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#賣出日期</span>
+<span class="n">y_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#賣出價格</span>
+<span class="n">profit_total</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#全部獲利金額</span>
+<span class="n">loss_total</span><span class="o">=</span><span class="mi">0</span>    <span class="c1">#全部虧損金額</span>
+
+<span class="k">def</span> <span class="nf">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">start</span><span class="p">):</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">money</span><span class="o">/</span><span class="p">(</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">))</span>
+    <span class="n">money</span><span class="o">=</span><span class="n">money</span><span class="o">-</span><span class="p">((</span><span class="n">start</span><span class="o">*</span><span class="n">tickets</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">*</span><span class="mf">1.006</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="n">start</span>
+
+<span class="k">def</span> <span class="nf">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">buy_money</span><span class="p">):</span>
+    <span class="n">money</span><span class="o">=</span><span class="p">(</span><span class="n">tickets</span><span class="o">*</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">+</span><span class="n">money</span>
+    <span class="n">profit</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="o">-</span><span class="n">buy_money</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">tickets</span>
+    <span class="k">print</span> <span class="s1">&#39;獲利金額&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">profit</span><span class="p">)</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">return</span> <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span>
+
+<span class="k">print</span> <span class="s1">&#39;log---------------------------------------------------------------&#39;</span>
+
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">final</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;開盤價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span><span class="s2">&quot;現在金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s2">&quot;現在持有張數&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="s2">&quot;買進當時股價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_money</span><span class="p">)</span>
+    
+    <span class="c1">#進場條件:只要當天有討論就進場</span>
+    <span class="k">if</span> <span class="n">tickets</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span> <span class="p">:</span>
+        <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;買進&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
+        <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">x_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">x_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+        <span class="k">continue</span>
+    <span class="c1">#出場條件:高於獲利出場門檻，低於虧損出場門檻</span>
+    <span class="k">if</span> <span class="n">tickets</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">high_limit</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">low_limit</span><span class="p">):</span>
+        <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;賣出&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
+        <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">profit_total</span><span class="o">=</span> <span class="n">profit_total</span><span class="o">+</span><span class="n">profit</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">loss_total</span><span class="o">=</span><span class="n">loss_total</span><span class="o">+</span><span class="n">profit</span>
+        <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+<span class="k">print</span> <span class="s1">&#39;------------------------------------------------------------------&#39;</span>
+<span class="k">print</span> <span class="s2">&quot;總共獲利金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit_total</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;總共虧損金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">loss_total</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>log---------------------------------------------------------------
+2016/10/04開盤價18.2 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/05開盤價21.55 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/06開盤價20.55 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/07開盤價20.8 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/07買進 4張
+2016/10/11開盤價22.4 現在金額16300 現在持有張數4 買進當時股價20.8
+2016/10/11賣出 4張
+獲利金額6400.0
+2016/10/12開盤價22.5 現在金額105900.0 現在持有張數0 買進當時股價0
+2016/10/13開盤價22.05 現在金額105900.0 現在持有張數0 買進當時股價0
+2016/10/14開盤價24.1 現在金額105900.0 現在持有張數0 買進當時股價0
+2016/10/17開盤價23.45 現在金額105900.0 現在持有張數0 買進當時股價0
+2016/10/18開盤價24.2 現在金額105900.0 現在持有張數0 買進當時股價0
+2016/10/18買進 4張
+2016/10/19開盤價24.5 現在金額8519 現在持有張數4 買進當時股價24.2
+2016/10/20開盤價25.45 現在金額8519 現在持有張數4 買進當時股價24.2
+2016/10/20賣出 4張
+獲利金額5000.0
+2016/10/21開盤價25.15 現在金額110319.0 現在持有張數0 買進當時股價0
+2016/10/24開盤價25.3 現在金額110319.0 現在持有張數0 買進當時股價0
+2016/10/24買進 4張
+2016/10/25開盤價26.1 現在金額8511 現在持有張數4 買進當時股價25.3
+2016/10/26開盤價26.8 現在金額8511 現在持有張數4 買進當時股價25.3
+2016/10/26賣出 4張
+獲利金額6000.0
+2016/10/27開盤價29.55 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/10/28開盤價31.4 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/10/31開盤價29.5 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/11/01開盤價29.15 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/11/02開盤價29.95 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/11/03開盤價29.2 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/11/04開盤價28.9 現在金額115711.0 現在持有張數0 買進當時股價0
+2016/11/04買進 4張
+2016/11/07開盤價29.55 現在金額-582 現在持有張數4 買進當時股價28.9
+2016/11/08開盤價29.0 現在金額-582 現在持有張數4 買進當時股價28.9
+2016/11/09開盤價28.8 現在金額-582 現在持有張數4 買進當時股價28.9
+2016/11/10開盤價31.5 現在金額-582 現在持有張數4 買進當時股價28.9
+2016/11/10賣出 4張
+獲利金額10400.0
+2016/11/11開盤價31.8 現在金額125418.0 現在持有張數0 買進當時股價0
+2016/11/11買進 3張
+2016/11/14開盤價34.0 現在金額29445 現在持有張數3 買進當時股價31.8
+2016/11/14賣出 3張
+獲利金額6600.0
+2016/11/15開盤價34.15 現在金額131445.0 現在持有張數0 買進當時股價0
+2016/11/15買進 3張
+2016/11/16開盤價38.4 現在金額28380 現在持有張數3 買進當時股價34.15
+2016/11/16賣出 3張
+獲利金額12750.0
+2016/11/17開盤價39.45 現在金額143580.0 現在持有張數0 買進當時股價0
+2016/11/17買進 3張
+2016/11/18開盤價41.0 現在金額24519 現在持有張數3 買進當時股價39.45
+2016/11/21開盤價40.5 現在金額24519 現在持有張數3 買進當時股價39.45
+2016/11/22開盤價50.2 現在金額24519 現在持有張數3 買進當時股價39.45
+2016/11/22賣出 3張
+獲利金額32250.0
+2016/11/23開盤價48.8 現在金額175119.0 現在持有張數0 買進當時股價0
+2016/11/24開盤價45.0 現在金額175119.0 現在持有張數0 買進當時股價0
+2016/11/24買進 3張
+2016/11/25開盤價46.35 現在金額39309 現在持有張數3 買進當時股價45.0
+2016/11/28開盤價42.9 現在金額39309 現在持有張數3 買進當時股價45.0
+2016/11/29開盤價37.3 現在金額39309 現在持有張數3 買進當時股價45.0
+2016/11/29賣出 3張
+獲利金額-23100.0
+2016/11/30開盤價39.8 現在金額151209.0 現在持有張數0 買進當時股價0
+2016/11/30買進 3張
+2016/12/01開盤價41.95 現在金額31092 現在持有張數3 買進當時股價39.8
+2016/12/01賣出 3張
+獲利金額6450.0
+2016/12/02開盤價40.1 現在金額156942.0 現在持有張數0 買進當時股價0
+2016/12/02買進 3張
+2016/12/05開盤價44.0 現在金額35920 現在持有張數3 買進當時股價40.1
+2016/12/05賣出 3張
+獲利金額11700.0
+2016/12/06開盤價41.05 現在金額167920.0 現在持有張數0 買進當時股價0
+2016/12/06買進 4張
+2016/12/07開盤價42.7 現在金額2734 現在持有張數4 買進當時股價41.05
+2016/12/08開盤價42.5 現在金額2734 現在持有張數4 買進當時股價41.05
+2016/12/09開盤價46.0 現在金額2734 現在持有張數4 買進當時股價41.05
+2016/12/09賣出 4張
+獲利金額19800.0
+2016/12/12開盤價44.1 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/13開盤價43.6 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/14開盤價41.55 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/15開盤價40.7 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/16開盤價42.6 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/19開盤價41.55 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/20開盤價40.4 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/21開盤價39.0 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/22開盤價35.5 現在金額186734.0 現在持有張數0 買進當時股價0
+2016/12/22買進 5張
+2016/12/23開盤價29.9 現在金額8169 現在持有張數5 買進當時股價35.5
+2016/12/23賣出 5張
+獲利金額-28000.0
+2016/12/26開盤價33.0 現在金額157669.0 現在持有張數0 買進當時股價0
+2016/12/26買進 4張
+2016/12/27開盤價31.5 現在金額24877 現在持有張數4 買進當時股價33.0
+2016/12/28開盤價29.25 現在金額24877 現在持有張數4 買進當時股價33.0
+2016/12/28賣出 4張
+獲利金額-15000.0
+2016/12/29開盤價30.0 現在金額141877.0 現在持有張數0 買進當時股價0
+2016/12/30開盤價30.15 現在金額141877.0 現在持有張數0 買進當時股價0
+2017/01/03開盤價30.55 現在金額141877.0 現在持有張數0 買進當時股價0
+2017/01/04開盤價31.45 現在金額141877.0 現在持有張數0 買進當時股價0
+2017/01/04買進 4張
+2017/01/05開盤價31.8 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/06開盤價31.25 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/09開盤價30.4 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/10開盤價31.45 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/11開盤價30.4 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/12開盤價30.05 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/13開盤價30.0 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/16開盤價29.8 現在金額15322 現在持有張數4 買進當時股價31.45
+2017/01/16賣出 4張
+獲利金額-6600.0
+2017/01/17開盤價28.1 現在金額134522.0 現在持有張數0 買進當時股價0
+2017/01/18開盤價24.0 現在金額134522.0 現在持有張數0 買進當時股價0
+2017/01/19開盤價21.1 現在金額134522.0 現在持有張數0 買進當時股價0
+2017/01/20開盤價21.5 現在金額134522.0 現在持有張數0 買進當時股價0
+2017/01/20開盤價21.7 現在金額134522.0 現在持有張數0 買進當時股價0
+------------------------------------------------------------------
+總共獲利金額117350.0
+總共虧損金額-72700.0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#產生交意圖</span>
+<span class="k">def</span> <span class="nf">thin_xticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">ticklabels</span><span class="p">,</span><span class="n">tick_gap</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">):</span>
     <span class="n">ticks</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_ticklocs</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">(</span><span class="n">ticklabels</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">],</span><span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
 <span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="n">data_ym</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="n">picture</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">,</span><span class="s1">&#39;start&#39;</span><span class="p">]]</span>
@@ -12145,13 +12304,25 @@ top:1575
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[6]:</div>
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>/usr/local/lib/python2.7/site-packages/matplotlib/figure.py:403: UserWarning: matplotlib is currently using a non-GUI backend, so cannot show the figure
+  &#34;matplotlib is currently using a non-GUI backend, &#34;
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[7]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x1467e8750&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x14ab39990&gt;]</pre>
 </div>
 
 </div>
@@ -12814,22 +12985,24 @@ UkoppZRSqsH+DzWLHC1HnFfUAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#交易策略買進</span>
-  <span class="c1">#宣告本金</span>
-<span class="n">money</span><span class="o">=</span><span class="mi">100000</span>
-<span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">low_limit</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">high_limit</span><span class="o">=</span><span class="mi">0</span>
-<span class="n">x_date</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">x_price</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">y_date</span><span class="o">=</span><span class="p">[]</span>
-<span class="n">y_price</span><span class="o">=</span><span class="p">[]</span>
 
-<span class="k">print</span> <span class="n">final</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">money</span><span class="o">=</span><span class="mi">100000</span>  <span class="c1">#本金</span>
+<span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>     <span class="c1">#股票張數</span>
+<span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#當時購買金額</span>
+<span class="n">limit</span><span class="o">=</span><span class="mf">0.05</span>    <span class="c1">#設定進出門檻上下界</span>
+<span class="n">low_limit</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#獲利出場門檻</span>
+<span class="n">high_limit</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#虧損出場門檻 </span>
+<span class="n">x_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#購買的日期</span>
+<span class="n">x_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#購買價格</span>
+<span class="n">y_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#賣出日期</span>
+<span class="n">y_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#賣出價格</span>
+<span class="n">profit_total</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#全部獲利金額</span>
+<span class="n">loss_total</span><span class="o">=</span><span class="mi">0</span>    <span class="c1">#全部虧損金額</span>
+
 
 <span class="k">def</span> <span class="nf">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">start</span><span class="p">):</span>
     <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
@@ -12839,25 +13012,41 @@ UkoppZRSqsH+DzWLHC1HnFfUAAAAAElFTkSuQmCC
 
 <span class="k">def</span> <span class="nf">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">buy_money</span><span class="p">):</span>
     <span class="n">money</span><span class="o">=</span><span class="p">(</span><span class="n">tickets</span><span class="o">*</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">+</span><span class="n">money</span>
-    <span class="k">print</span> <span class="s1">&#39;獲利金額&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">start</span><span class="o">-</span><span class="n">buy_money</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">tickets</span><span class="p">)</span>
+    <span class="n">profit</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="o">-</span><span class="n">buy_money</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">tickets</span>
+    <span class="k">print</span> <span class="s1">&#39;獲利金額&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">profit</span><span class="p">)</span>
     <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
     <span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
-    <span class="k">return</span> <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span>
+    <span class="k">return</span> <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span>
+
+<span class="k">print</span> <span class="s1">&#39;log---------------------------------------------------------------&#39;</span>
+
 <span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">final</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-    <span class="k">print</span> <span class="n">index</span><span class="p">,</span><span class="s2">&quot;今天開盤價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span><span class="s2">&quot;現在金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s2">&quot;現在持有張數&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="s2">&quot;買進當時股價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_money</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;開盤價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span><span class="s2">&quot;現在金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s2">&quot;現在持有張數&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="s2">&quot;買進當時股價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_money</span><span class="p">)</span>
+
+    <span class="c1">#買進條件:當天有發文且看漲文本數量大於看跌文本數量</span>
     <span class="k">if</span> <span class="n">tickets</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">10</span><span class="p">:</span>
         <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
         <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;買進&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
-        <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="mf">0.95</span>
-        <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="mf">1.05</span>
+        <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+        <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
         <span class="n">x_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="n">x_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
         <span class="k">continue</span>
+        
+    <span class="c1">#出場條件看跌文本大於看漲文本，或是高於獲利出場門檻，低於虧損出場門檻</span>
     <span class="k">if</span> <span class="n">tickets</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">high_limit</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">low_limit</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]):</span>
         <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;賣出&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
-        <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
+        <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">profit_total</span><span class="o">=</span> <span class="n">profit_total</span><span class="o">+</span><span class="n">profit</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">loss_total</span><span class="o">=</span><span class="n">loss_total</span><span class="o">+</span><span class="n">profit</span>
         <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+
+<span class="k">print</span> <span class="s1">&#39;------------------------------------------------------------------&#39;</span>
+<span class="k">print</span> <span class="s2">&quot;總共獲利金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit_total</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;總共虧損金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">loss_total</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12874,111 +13063,109 @@ UkoppZRSqsH+DzWLHC1HnFfUAAAAAElFTkSuQmCC
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>      data_ym  start  amount  down   top  final  total
-0  2016/10/03  18.20     550   NaN   NaN    NaN    NaN
-1  2016/10/04  21.55    8468   NaN   NaN    NaN    NaN
-2  2016/10/05  20.55    1331   NaN   NaN    NaN    NaN
-3  2016/10/06  20.80    2517  26.0  25.0   -1.0   51.0
-4  2016/10/07  22.40    1945   NaN   NaN    NaN    NaN
-0 今天開盤價18.2 現在金額100000 現在持有張數0 買進當時股價0
-1 今天開盤價21.55 現在金額100000 現在持有張數0 買進當時股價0
-2 今天開盤價20.55 現在金額100000 現在持有張數0 買進當時股價0
-3 今天開盤價20.8 現在金額100000 現在持有張數0 買進當時股價0
-4 今天開盤價22.4 現在金額100000 現在持有張數0 買進當時股價0
-5 今天開盤價22.5 現在金額100000 現在持有張數0 買進當時股價0
-6 今天開盤價22.05 現在金額100000 現在持有張數0 買進當時股價0
-7 今天開盤價24.1 現在金額100000 現在持有張數0 買進當時股價0
-8 今天開盤價23.45 現在金額100000 現在持有張數0 買進當時股價0
-9 今天開盤價24.2 現在金額100000 現在持有張數0 買進當時股價0
-10 今天開盤價24.5 現在金額100000 現在持有張數0 買進當時股價0
-11 今天開盤價25.45 現在金額100000 現在持有張數0 買進當時股價0
-12 今天開盤價25.15 現在金額100000 現在持有張數0 買進當時股價0
-13 今天開盤價25.3 現在金額100000 現在持有張數0 買進當時股價0
-14 今天開盤價26.1 現在金額100000 現在持有張數0 買進當時股價0
-15 今天開盤價26.8 現在金額100000 現在持有張數0 買進當時股價0
-16 今天開盤價29.55 現在金額100000 現在持有張數0 買進當時股價0
-17 今天開盤價31.4 現在金額100000 現在持有張數0 買進當時股價0
-18 今天開盤價29.5 現在金額100000 現在持有張數0 買進當時股價0
-19 今天開盤價29.15 現在金額100000 現在持有張數0 買進當時股價0
-20 今天開盤價29.95 現在金額100000 現在持有張數0 買進當時股價0
-21 今天開盤價29.2 現在金額100000 現在持有張數0 買進當時股價0
-22 今天開盤價28.9 現在金額100000 現在持有張數0 買進當時股價0
-2016/11/03買進 3張
-23 今天開盤價29.55 現在金額12779 現在持有張數3 買進當時股價28.9
-24 今天開盤價29.0 現在金額12779 現在持有張數3 買進當時股價28.9
-25 今天開盤價28.8 現在金額12779 現在持有張數3 買進當時股價28.9
-26 今天開盤價31.5 現在金額12779 現在持有張數3 買進當時股價28.9
-2016/11/09賣出 3張
+<pre>log---------------------------------------------------------------
+2016/10/04開盤價18.2 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/05開盤價21.55 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/06開盤價20.55 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/07開盤價20.8 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/11開盤價22.4 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/12開盤價22.5 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/13開盤價22.05 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/14開盤價24.1 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/17開盤價23.45 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/18開盤價24.2 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/19開盤價24.5 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/20開盤價25.45 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/21開盤價25.15 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/24開盤價25.3 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/25開盤價26.1 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/26開盤價26.8 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/27開盤價29.55 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/28開盤價31.4 現在金額100000 現在持有張數0 買進當時股價0
+2016/10/31開盤價29.5 現在金額100000 現在持有張數0 買進當時股價0
+2016/11/01開盤價29.15 現在金額100000 現在持有張數0 買進當時股價0
+2016/11/02開盤價29.95 現在金額100000 現在持有張數0 買進當時股價0
+2016/11/03開盤價29.2 現在金額100000 現在持有張數0 買進當時股價0
+2016/11/04開盤價28.9 現在金額100000 現在持有張數0 買進當時股價0
+2016/11/04買進 3張
+2016/11/07開盤價29.55 現在金額12779 現在持有張數3 買進當時股價28.9
+2016/11/08開盤價29.0 現在金額12779 現在持有張數3 買進當時股價28.9
+2016/11/09開盤價28.8 現在金額12779 現在持有張數3 買進當時股價28.9
+2016/11/10開盤價31.5 現在金額12779 現在持有張數3 買進當時股價28.9
+2016/11/10賣出 3張
 獲利金額7800.0
-27 今天開盤價31.8 現在金額107279.0 現在持有張數0 買進當時股價0
-2016/11/10買進 3張
-28 今天開盤價34.0 現在金額11306 現在持有張數3 買進當時股價31.8
-2016/11/11賣出 3張
+2016/11/11開盤價31.8 現在金額107279.0 現在持有張數0 買進當時股價0
+2016/11/11買進 3張
+2016/11/14開盤價34.0 現在金額11306 現在持有張數3 買進當時股價31.8
+2016/11/14賣出 3張
 獲利金額6600.0
-29 今天開盤價34.15 現在金額113306.0 現在持有張數0 買進當時股價0
-2016/11/14買進 3張
-30 今天開盤價38.4 現在金額10241 現在持有張數3 買進當時股價34.15
-2016/11/15賣出 3張
+2016/11/15開盤價34.15 現在金額113306.0 現在持有張數0 買進當時股價0
+2016/11/15買進 3張
+2016/11/16開盤價38.4 現在金額10241 現在持有張數3 買進當時股價34.15
+2016/11/16賣出 3張
 獲利金額12750.0
-31 今天開盤價39.45 現在金額125441.0 現在持有張數0 買進當時股價0
-2016/11/16買進 3張
-32 今天開盤價41.0 現在金額6380 現在持有張數3 買進當時股價39.45
-33 今天開盤價40.5 現在金額6380 現在持有張數3 買進當時股價39.45
-34 今天開盤價50.2 現在金額6380 現在持有張數3 買進當時股價39.45
-2016/11/21賣出 3張
+2016/11/17開盤價39.45 現在金額125441.0 現在持有張數0 買進當時股價0
+2016/11/17買進 3張
+2016/11/18開盤價41.0 現在金額6380 現在持有張數3 買進當時股價39.45
+2016/11/21開盤價40.5 現在金額6380 現在持有張數3 買進當時股價39.45
+2016/11/22開盤價50.2 現在金額6380 現在持有張數3 買進當時股價39.45
+2016/11/22賣出 3張
 獲利金額32250.0
-35 今天開盤價48.8 現在金額156980.0 現在持有張數0 買進當時股價0
-36 今天開盤價45.0 現在金額156980.0 現在持有張數0 買進當時股價0
-37 今天開盤價46.35 現在金額156980.0 現在持有張數0 買進當時股價0
-38 今天開盤價42.9 現在金額156980.0 現在持有張數0 買進當時股價0
-39 今天開盤價37.3 現在金額156980.0 現在持有張數0 買進當時股價0
-40 今天開盤價39.8 現在金額156980.0 現在持有張數0 買進當時股價0
-2016/11/29買進 3張
-41 今天開盤價41.95 現在金額36863 現在持有張數3 買進當時股價39.8
-2016/11/30賣出 3張
+2016/11/23開盤價48.8 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/24開盤價45.0 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/25開盤價46.35 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/28開盤價42.9 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/29開盤價37.3 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/30開盤價39.8 現在金額156980.0 現在持有張數0 買進當時股價0
+2016/11/30買進 3張
+2016/12/01開盤價41.95 現在金額36863 現在持有張數3 買進當時股價39.8
+2016/12/01賣出 3張
 獲利金額6450.0
-42 今天開盤價40.1 現在金額162713.0 現在持有張數0 買進當時股價0
-2016/12/01買進 4張
-43 今天開盤價44.0 現在金額1350 現在持有張數4 買進當時股價40.1
-2016/12/02賣出 4張
+2016/12/02開盤價40.1 現在金額162713.0 現在持有張數0 買進當時股價0
+2016/12/02買進 4張
+2016/12/05開盤價44.0 現在金額1350 現在持有張數4 買進當時股價40.1
+2016/12/05賣出 4張
 獲利金額15600.0
-44 今天開盤價41.05 現在金額177350.0 現在持有張數0 買進當時股價0
-45 今天開盤價42.7 現在金額177350.0 現在持有張數0 買進當時股價0
-46 今天開盤價42.5 現在金額177350.0 現在持有張數0 買進當時股價0
-2016/12/07買進 4張
-47 今天開盤價46.0 現在金額6330 現在持有張數4 買進當時股價42.5
-2016/12/08賣出 4張
+2016/12/06開盤價41.05 現在金額177350.0 現在持有張數0 買進當時股價0
+2016/12/07開盤價42.7 現在金額177350.0 現在持有張數0 買進當時股價0
+2016/12/08開盤價42.5 現在金額177350.0 現在持有張數0 買進當時股價0
+2016/12/08買進 4張
+2016/12/09開盤價46.0 現在金額6330 現在持有張數4 買進當時股價42.5
+2016/12/09賣出 4張
 獲利金額14000.0
-48 今天開盤價44.1 現在金額190330.0 現在持有張數0 買進當時股價0
-49 今天開盤價43.6 現在金額190330.0 現在持有張數0 買進當時股價0
-50 今天開盤價41.55 現在金額190330.0 現在持有張數0 買進當時股價0
-51 今天開盤價40.7 現在金額190330.0 現在持有張數0 買進當時股價0
-52 今天開盤價42.6 現在金額190330.0 現在持有張數0 買進當時股價0
-53 今天開盤價41.55 現在金額190330.0 現在持有張數0 買進當時股價0
-54 今天開盤價40.4 現在金額190330.0 現在持有張數0 買進當時股價0
-55 今天開盤價39.0 現在金額190330.0 現在持有張數0 買進當時股價0
-56 今天開盤價35.5 現在金額190330.0 現在持有張數0 買進當時股價0
-57 今天開盤價29.9 現在金額190330.0 現在持有張數0 買進當時股價0
-58 今天開盤價33.0 現在金額190330.0 現在持有張數0 買進當時股價0
-59 今天開盤價31.5 現在金額190330.0 現在持有張數0 買進當時股價0
-60 今天開盤價29.25 現在金額190330.0 現在持有張數0 買進當時股價0
-61 今天開盤價30.0 現在金額190330.0 現在持有張數0 買進當時股價0
-62 今天開盤價30.15 現在金額190330.0 現在持有張數0 買進當時股價0
-63 今天開盤價30.55 現在金額190330.0 現在持有張數0 買進當時股價0
-64 今天開盤價31.45 現在金額190330.0 現在持有張數0 買進當時股價0
-65 今天開盤價31.8 現在金額190330.0 現在持有張數0 買進當時股價0
-66 今天開盤價31.25 現在金額190330.0 現在持有張數0 買進當時股價0
-67 今天開盤價30.4 現在金額190330.0 現在持有張數0 買進當時股價0
-68 今天開盤價31.45 現在金額190330.0 現在持有張數0 買進當時股價0
-69 今天開盤價30.4 現在金額190330.0 現在持有張數0 買進當時股價0
-70 今天開盤價30.05 現在金額190330.0 現在持有張數0 買進當時股價0
-71 今天開盤價30.0 現在金額190330.0 現在持有張數0 買進當時股價0
-72 今天開盤價29.8 現在金額190330.0 現在持有張數0 買進當時股價0
-73 今天開盤價28.1 現在金額190330.0 現在持有張數0 買進當時股價0
-74 今天開盤價24.0 現在金額190330.0 現在持有張數0 買進當時股價0
-75 今天開盤價21.1 現在金額190330.0 現在持有張數0 買進當時股價0
-76 今天開盤價21.5 現在金額190330.0 現在持有張數0 買進當時股價0
-77 今天開盤價21.7 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/12開盤價44.1 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/13開盤價43.6 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/14開盤價41.55 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/15開盤價40.7 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/16開盤價42.6 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/19開盤價41.55 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/20開盤價40.4 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/21開盤價39.0 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/22開盤價35.5 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/23開盤價29.9 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/26開盤價33.0 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/27開盤價31.5 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/28開盤價29.25 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/29開盤價30.0 現在金額190330.0 現在持有張數0 買進當時股價0
+2016/12/30開盤價30.15 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/03開盤價30.55 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/04開盤價31.45 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/05開盤價31.8 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/06開盤價31.25 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/09開盤價30.4 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/10開盤價31.45 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/11開盤價30.4 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/12開盤價30.05 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/13開盤價30.0 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/16開盤價29.8 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/17開盤價28.1 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/18開盤價24.0 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/19開盤價21.1 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/20開盤價21.5 現在金額190330.0 現在持有張數0 買進當時股價0
+2017/01/20開盤價21.7 現在金額190330.0 現在持有張數0 買進當時股價0
+------------------------------------------------------------------
+總共獲利金額95450.0
+總共虧損金額0
 </pre>
 </div>
 </div>
@@ -12989,10 +13176,11 @@ UkoppZRSqsH+DzWLHC1HnFfUAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">thin_xticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">ticklabels</span><span class="p">,</span><span class="n">tick_gap</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">):</span>
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#產生交易圖</span>
+<span class="k">def</span> <span class="nf">thin_xticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">ticklabels</span><span class="p">,</span><span class="n">tick_gap</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">):</span>
     <span class="n">ticks</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_ticklocs</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">(</span><span class="n">ticklabels</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">],</span><span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
@@ -13019,13 +13207,13 @@ UkoppZRSqsH+DzWLHC1HnFfUAAAAAElFTkSuQmCC
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[8]:</div>
+<div class="prompt output_prompt">Out[9]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>[&lt;matplotlib.lines.Line2D at 0x146edafd0&gt;]</pre>
+<pre>[&lt;matplotlib.lines.Line2D at 0x14abd8e50&gt;]</pre>
 </div>
 
 </div>
@@ -13670,6 +13858,1020 @@ yShOPnkyipNPnozi5BMnnzwZxcknT0Zx8smTUZx88mQU14rPjHcK7VzRzHZxzp3qJKM4+eTJKE4+
 eTKKk0+cfPJkFCefPBnFySdPRnHyyZNR3Lj77PZOIaWUUkoppZRSSik1us1kommllFJKKaWUUkop
 NSZpp5BSSimllFJKKaVUg2mnkFJKKaWUUkoppVSDaaeQUkoppZRSSimlVINpp5BSSimllFJKKaVU
 g/0f0EJrdEGbuXQAAAAASUVORK5CYII=
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="c1">#交易策略買進</span>
+
+<span class="n">money</span><span class="o">=</span><span class="mi">100000</span>  <span class="c1">#本金</span>
+<span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>     <span class="c1">#股票張數</span>
+<span class="n">margin</span><span class="o">=</span><span class="mi">0</span>       <span class="c1">#融券張數</span>
+<span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#當時購買金額</span>
+<span class="n">buy_margin</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#借券當時的價格</span>
+
+<span class="n">limit</span><span class="o">=</span><span class="mf">0.05</span>    <span class="c1">#設定進出門檻上下界</span>
+<span class="n">low_limit</span><span class="o">=</span><span class="mi">0</span>   <span class="c1">#獲利出場門檻</span>
+<span class="n">high_limit</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#虧損出場門檻</span>
+<span class="n">low_limit_margin</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#融券獲利出場條件</span>
+<span class="n">high_limit_margin</span><span class="o">=</span><span class="mi">0</span> <span class="c1">#融券虧損出場條件</span>
+
+<span class="n">x_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#多單進場的日期</span>
+<span class="n">x_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#多單進場價格</span>
+<span class="n">y_date</span><span class="o">=</span><span class="p">[]</span>     <span class="c1">#空單進場日期</span>
+<span class="n">y_price</span><span class="o">=</span><span class="p">[]</span>    <span class="c1">#空單進場價格</span>
+
+<span class="n">profit_total</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#全部多單獲利金額</span>
+<span class="n">loss_total</span><span class="o">=</span><span class="mi">0</span>    <span class="c1">#全部多單虧損金額</span>
+<span class="n">margin_profit_total</span><span class="o">=</span><span class="mi">0</span>  <span class="c1">#全部空單獲利金額</span>
+<span class="n">margin_loss_total</span><span class="o">=</span><span class="mi">0</span>    <span class="c1">#全部空單虧損金額</span>
+
+
+<span class="k">def</span> <span class="nf">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">start</span><span class="p">):</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">money</span><span class="o">/</span><span class="p">(</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">))</span>
+    <span class="n">money</span><span class="o">=</span><span class="n">money</span><span class="o">-</span><span class="p">((</span><span class="n">start</span><span class="o">*</span><span class="n">tickets</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">*</span><span class="mf">1.006</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="n">start</span>
+
+<span class="k">def</span> <span class="nf">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">buy_money</span><span class="p">):</span>
+    <span class="n">money</span><span class="o">=</span><span class="p">(</span><span class="n">tickets</span><span class="o">*</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">+</span><span class="n">money</span>
+    <span class="n">profit</span><span class="o">=</span><span class="p">(</span><span class="n">start</span><span class="o">-</span><span class="n">buy_money</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">tickets</span>
+    <span class="n">tickets</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">buy_money</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">return</span> <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span>
+
+<span class="c1">#借券</span>
+<span class="k">def</span> <span class="nf">margin_buy_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">start</span><span class="p">):</span>
+    <span class="n">margin</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">margin</span><span class="o">=</span><span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">money</span><span class="o">/</span><span class="p">(</span><span class="n">start</span><span class="o">*</span><span class="mi">1000</span><span class="p">))</span>
+    <span class="n">money</span><span class="o">=</span><span class="n">money</span><span class="o">-</span><span class="p">((</span><span class="n">start</span><span class="o">*</span><span class="n">margin</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">*</span><span class="mf">1.007</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">margin</span><span class="p">),</span><span class="n">start</span>
+
+<span class="c1">#借券歸還</span>
+<span class="k">def</span> <span class="nf">margin_sell_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">margin</span><span class="p">,</span><span class="n">start</span><span class="p">,</span><span class="n">buy_margin</span><span class="p">):</span>
+    <span class="n">profit</span><span class="o">=-</span><span class="mi">1</span><span class="o">*</span><span class="p">(</span><span class="n">start</span><span class="o">-</span><span class="n">buy_margin</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">*</span><span class="n">margin</span>
+    <span class="n">money</span><span class="o">=</span><span class="p">(</span><span class="n">margin</span><span class="o">*</span><span class="n">buy_margin</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span><span class="o">+</span><span class="n">money</span><span class="o">+</span><span class="n">profit</span>
+    <span class="n">margin</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">buy_margin</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">return</span> <span class="n">margin</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_margin</span><span class="p">,</span><span class="n">profit</span>
+
+<span class="k">print</span> <span class="s1">&#39;log---------------------------------------------------------------&#39;</span>
+
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">final</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;開盤價&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]),</span><span class="s2">&quot;現在金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s2">&quot;現在持有張數&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">),</span><span class="s2">&quot;買進當時股價 &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_money</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; 融券數量 &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">margin</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;融券價格&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_margin</span><span class="p">)</span>
+    
+    <span class="c1">#多單條件:當天有發文且看漲文本數量大於看跌文本數量</span>
+    
+    <span class="k">if</span> <span class="n">tickets</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">]:</span>
+        <span class="c1">#沒券情況:</span>
+        <span class="k">if</span> <span class="n">margin</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;買進&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
+            <span class="c1">#設定多單進出場門檻</span>
+            <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
+            <span class="c1">#紀錄多單進場價格、日期</span>
+            <span class="n">x_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">x_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">continue</span>
+        <span class="c1">#有券情況:</span>
+        <span class="k">if</span> <span class="n">margin</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="c1">#空單出場</span>
+            <span class="n">margin</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_margin</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">margin_sell_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">margin</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_margin</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s2">&quot;融券獲利&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s1">&#39;現在本金&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">)</span>
+            <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>                   
+            <span class="c1">#計算空單獲利與虧損</span>
+            <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">margin_profit_total</span><span class="o">=</span> <span class="n">margin_profit_total</span><span class="o">+</span><span class="n">profit</span>
+            <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">margin_loss_total</span><span class="o">=</span><span class="n">margin_loss_total</span><span class="o">+</span><span class="n">profit</span>            
+               
+            <span class="c1">#多單進場</span>
+            <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;買進&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
+            
+            <span class="c1">#設定多單進出場門檻</span>
+            <span class="n">low_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">high_limit</span><span class="o">=</span><span class="n">buy_money</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
+            
+            <span class="c1">#紀錄多單進場價格、日期 </span>
+            <span class="n">x_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">x_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">continue</span>
+      
+        
+    <span class="c1">#空單條件:1.沒有券2.當天有發文且看跌文本多於看漲文本</span>
+    <span class="k">if</span> <span class="n">margin</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;down&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="c1">#有股票</span>
+        <span class="k">if</span> <span class="n">tickets</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;賣出&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">tickets</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;張&#39;</span>
+            <span class="c1">#多單獲利了解</span>
+            <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s1">&#39;現在本金&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">)</span>
+            <span class="c1">#計算多單累積盈虧</span>
+            <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">profit_total</span><span class="o">=</span> <span class="n">profit_total</span><span class="o">+</span><span class="n">profit</span>
+            <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">loss_total</span><span class="o">=</span><span class="n">loss_total</span><span class="o">+</span><span class="n">profit</span>
+            
+            <span class="c1">#空單進場</span>
+            <span class="n">money</span><span class="p">,</span><span class="n">margin</span><span class="p">,</span><span class="n">buy_margin</span><span class="o">=</span><span class="n">margin_buy_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">print</span>  <span class="s1">&#39;剩下本金&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s1">&#39;融券數量&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">margin</span><span class="p">),</span><span class="s1">&#39;融券時價格&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_margin</span><span class="p">)</span>
+            <span class="c1">#設定空單進出場條件</span>
+            <span class="n">low_limit_margin</span><span class="o">=</span><span class="n">buy_margin</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">high_limit_margin</span><span class="o">=</span><span class="n">buy_margin</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
+            <span class="c1">#紀錄空單時間、股價</span>
+            <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>            
+            <span class="k">continue</span>
+        <span class="c1">#沒有股票</span>
+        <span class="k">if</span> <span class="n">tickets</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="c1">#空券進場</span>
+            <span class="n">money</span><span class="p">,</span><span class="n">margin</span><span class="p">,</span><span class="n">buy_margin</span><span class="o">=</span><span class="n">margin_buy_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+            <span class="k">print</span>  <span class="s1">&#39;剩下本金&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">money</span><span class="p">),</span><span class="s1">&#39;融券數量&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">margin</span><span class="p">),</span><span class="s1">&#39;融券時價格&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">buy_margin</span><span class="p">)</span>
+            <span class="c1">#設定空單進出場條件</span>
+            <span class="n">low_limit_margin</span><span class="o">=</span><span class="n">buy_margin</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">limit</span><span class="p">)</span>
+            <span class="n">high_limit_margin</span><span class="o">=</span><span class="n">buy_margin</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">limit</span><span class="p">)</span>
+            <span class="c1">#紀錄空單時間、股價</span>
+            <span class="n">y_date</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">y_price</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>        
+    <span class="c1">#空單出場條件:</span>
+    <span class="k">if</span> <span class="n">margin</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">low_limit_margin</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">high_limit_margin</span><span class="p">):</span>
+        <span class="n">margin</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_margin</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">margin_sell_f</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">margin</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_margin</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">&quot;融券獲利&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit</span><span class="p">)</span>
+
+        <span class="c1">#計算空單獲利與虧損</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">margin_profit_total</span><span class="o">=</span> <span class="n">margin_profit_total</span><span class="o">+</span><span class="n">profit</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">margin_loss_total</span><span class="o">=</span><span class="n">margin_loss_total</span><span class="o">+</span><span class="n">profit</span>            
+            <span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">buy_money</span><span class="o">=</span><span class="n">buy</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">])</span>
+   
+    <span class="c1">#多單出場條件:</span>
+    <span class="k">if</span> <span class="n">tickets</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">low_limit</span> <span class="ow">or</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">high_limit</span><span class="p">):</span>
+        <span class="n">tickets</span><span class="p">,</span><span class="n">money</span><span class="p">,</span><span class="n">buy_money</span><span class="p">,</span><span class="n">profit</span><span class="o">=</span><span class="n">sell</span><span class="p">(</span><span class="n">money</span><span class="p">,</span><span class="n">tickets</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;start&#39;</span><span class="p">],</span><span class="n">buy_money</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s2">&quot;多單獲利&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit</span><span class="p">)</span>
+        
+        <span class="c1">#計算多單獲利與虧損</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">profit_total</span><span class="o">=</span> <span class="n">profit_total</span><span class="o">+</span><span class="n">profit</span>
+        <span class="k">if</span> <span class="n">profit</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">loss_total</span><span class="o">=</span><span class="n">loss_total</span><span class="o">+</span><span class="n">profit</span>
+
+<span class="k">print</span> <span class="s1">&#39;------------------------------------------------------------------&#39;</span>
+<span class="k">print</span> <span class="s2">&quot;總共多單獲利金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">profit_total</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;總共多單虧損金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">loss_total</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;總共借券獲利金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">margin_profit_total</span><span class="p">)</span>
+<span class="k">print</span> <span class="s2">&quot;總共借券虧損金額&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">margin_loss_total</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>log---------------------------------------------------------------
+2016/10/04開盤價18.2 現在金額100000 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/05開盤價21.55 現在金額100000 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/06開盤價20.55 現在金額100000 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/07開盤價20.8 現在金額100000 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金16217 融券數量4 融券時價格20.8
+2016/10/11開盤價22.4 現在金額16217 現在持有張數0 買進當時股價 0 融券數量 4融券價格20.8
+融券獲利-6400.0
+多單獲利0.0
+2016/10/12開盤價22.5 現在金額92479.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/13開盤價22.05 現在金額92479.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/14開盤價24.1 現在金額92479.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/17開盤價23.45 現在金額92479.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/18開盤價24.2 現在金額92479.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金19370 融券數量3 融券時價格24.2
+2016/10/19開盤價24.5 現在金額19370 現在持有張數0 買進當時股價 0 融券數量 3融券價格24.2
+2016/10/20開盤價25.45 現在金額19370 現在持有張數0 買進當時股價 0 融券數量 3融券價格24.2
+融券獲利-3750.0
+多單獲利0.0
+2016/10/21開盤價25.15 現在金額87761.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/24開盤價25.3 現在金額87761.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金11329 融券數量3 融券時價格25.3
+2016/10/25開盤價26.1 現在金額11329 現在持有張數0 買進當時股價 0 融券數量 3融券價格25.3
+2016/10/26開盤價26.8 現在金額11329 現在持有張數0 買進當時股價 0 融券數量 3融券價格25.3
+融券獲利-4500.0
+多單獲利0.0
+2016/10/27開盤價29.55 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/28開盤價31.4 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/10/31開盤價29.5 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/01開盤價29.15 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/02開盤價29.95 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/03開盤價29.2 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/04開盤價28.9 現在金額82246.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/04買進 2張
+2016/11/07開盤價29.55 現在金額24099 現在持有張數2 買進當時股價 28.9 融券數量 0融券價格0
+2016/11/08開盤價29.0 現在金額24099 現在持有張數2 買進當時股價 28.9 融券數量 0融券價格0
+2016/11/09開盤價28.8 現在金額24099 現在持有張數2 買進當時股價 28.9 融券數量 0融券價格0
+2016/11/10開盤價31.5 現在金額24099 現在持有張數2 買進當時股價 28.9 融券數量 0融券價格0
+多單獲利5200.0
+2016/11/11開盤價31.8 現在金額87099.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/11買進 2張
+2016/11/14開盤價34.0 現在金額23117 現在持有張數2 買進當時股價 31.8 融券數量 0融券價格0
+多單獲利4400.0
+2016/11/15開盤價34.15 現在金額91117.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/15買進 2張
+2016/11/16開盤價38.4 現在金額22407 現在持有張數2 買進當時股價 34.15 融券數量 0融券價格0
+2016/11/16賣出 2張
+現在本金99207.0
+剩下本金21869 融券數量2 融券時價格38.4
+2016/11/17開盤價39.45 現在金額21869 現在持有張數0 買進當時股價 0 融券數量 2融券價格38.4
+融券獲利-2100.0
+現在本金96569.0
+2016/11/17買進 2張
+2016/11/18開盤價41.0 現在金額17195 現在持有張數2 買進當時股價 39.45 融券數量 0融券價格0
+2016/11/21開盤價40.5 現在金額17195 現在持有張數2 買進當時股價 39.45 融券數量 0融券價格0
+2016/11/22開盤價50.2 現在金額17195 現在持有張數2 買進當時股價 39.45 融券數量 0融券價格0
+2016/11/22賣出 2張
+現在本金117595.0
+剩下本金16492 融券數量2 融券時價格50.2
+2016/11/23開盤價48.8 現在金額16492 現在持有張數0 買進當時股價 0 融券數量 2融券價格50.2
+2016/11/24開盤價45.0 現在金額16492 現在持有張數0 買進當時股價 0 融券數量 2融券價格50.2
+融券獲利10400.0
+2016/11/25開盤價46.35 現在金額127292.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金33943 融券數量2 融券時價格46.35
+2016/11/28開盤價42.9 現在金額33943 現在持有張數0 買進當時股價 0 融券數量 2融券價格46.35
+融券獲利6900.0
+2016/11/29開盤價37.3 現在金額133543.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/30開盤價39.8 現在金額133543.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/11/30買進 3張
+2016/12/01開盤價41.95 現在金額13426 現在持有張數3 買進當時股價 39.8 融券數量 0融券價格0
+多單獲利6450.0
+2016/12/02開盤價40.1 現在金額139276.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/02買進 3張
+2016/12/05開盤價44.0 現在金額18254 現在持有張數3 買進當時股價 40.1 融券數量 0融券價格0
+多單獲利11700.0
+2016/12/06開盤價41.05 現在金額150254.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金26241 融券數量3 融券時價格41.05
+2016/12/07開盤價42.7 現在金額26241 現在持有張數0 買進當時股價 0 融券數量 3融券價格41.05
+2016/12/08開盤價42.5 現在金額26241 現在持有張數0 買進當時股價 0 融券數量 3融券價格41.05
+融券獲利-4350.0
+現在本金145041.0
+2016/12/08買進 3張
+2016/12/09開盤價46.0 現在金額16776 現在持有張數3 買進當時股價 42.5 融券數量 0融券價格0
+多單獲利10500.0
+2016/12/12開盤價44.1 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/13開盤價43.6 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/14開盤價41.55 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/15開盤價40.7 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/16開盤價42.6 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/19開盤價41.55 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/20開盤價40.4 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/21開盤價39.0 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/22開盤價35.5 現在金額154776.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金11782 融券數量4 融券時價格35.5
+2016/12/23開盤價29.9 現在金額11782 現在持有張數0 買進當時股價 0 融券數量 4融券價格35.5
+融券獲利22400.0
+2016/12/26開盤價33.0 現在金額176182.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金10027 融券數量5 融券時價格33.0
+2016/12/27開盤價31.5 現在金額10027 現在持有張數0 買進當時股價 0 融券數量 5融券價格33.0
+2016/12/28開盤價29.25 現在金額10027 現在持有張數0 買進當時股價 0 融券數量 5融券價格33.0
+融券獲利18750.0
+2016/12/29開盤價30.0 現在金額193777.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2016/12/30開盤價30.15 現在金額193777.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/03開盤價30.55 現在金額193777.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/04開盤價31.45 現在金額193777.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+剩下本金3756 融券數量6 融券時價格31.45
+2017/01/05開盤價31.8 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/06開盤價31.25 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/09開盤價30.4 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/10開盤價31.45 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/11開盤價30.4 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/12開盤價30.05 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/13開盤價30.0 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+2017/01/16開盤價29.8 現在金額3756 現在持有張數0 買進當時股價 0 融券數量 6融券價格31.45
+融券獲利9900.0
+2017/01/17開盤價28.1 現在金額202356.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/18開盤價24.0 現在金額202356.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/19開盤價21.1 現在金額202356.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/20開盤價21.5 現在金額202356.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+2017/01/20開盤價21.7 現在金額202356.0 現在持有張數0 買進當時股價 0 融券數量 0融券價格0
+------------------------------------------------------------------
+總共多單獲利金額68250.0
+總共多單虧損金額0
+總共借券獲利金額68350.0
+總共借券虧損金額-21100.0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython2"><pre><span></span><span class="k">def</span> <span class="nf">thin_xticks</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">ticklabels</span><span class="p">,</span><span class="n">tick_gap</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">):</span>
+    <span class="n">ticks</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_ticklocs</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">(</span><span class="n">ticklabels</span><span class="p">[::</span><span class="n">tick_gap</span><span class="p">],</span><span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">data_ym</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">picture</span><span class="o">=</span><span class="n">stock_price</span><span class="p">[[</span><span class="s1">&#39;data_ym&#39;</span><span class="p">,</span><span class="s1">&#39;start&#39;</span><span class="p">]]</span>
+<span class="n">plt</span><span class="o">=</span><span class="n">picture</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">ticks</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_ym</span><span class="p">)))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">ticks</span><span class="p">)</span>
+<span class="n">thin_xticks</span><span class="p">(</span><span class="n">plt</span><span class="p">,</span><span class="n">data_ym</span><span class="p">)</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y_date</span><span class="p">,</span><span class="n">y_price</span><span class="p">,</span><span class="s1">&#39;ro&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_date</span><span class="p">,</span><span class="n">x_price</span><span class="p">,</span><span class="s1">&#39;ro&#39;</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[11]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&lt;matplotlib.lines.Line2D at 0x14adf1550&gt;]</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+K6preX3GRoZ0jKNLUlQ9ShMRERERERERkYNxyKGQtXY6YP7g5uGHU8yH83LYubuK64eql5CIiIiI
+iIiISGM6rNXHGlJNrYuXflpPz5QW9G8X63Q5IiIiIiIiIiJHNK8Jhb5aupWcgnKuH9oe97RFIiIi
+IiIiIiLSWLwiFLLWMm7qetrHhXPiUQlOlyMiIiIiIiIicsTzilBo6pp8Vm4t5k9D2uPnp15CIiIi
+IiIiIiKNzStCoXFTs0iMCuGcnm2cLkVERERERERExCc4HgotzC5k9voCrhncjqAAx8sRERERERER
+EfEJjqcw46ZmER0ayIX9Up0uRURERERERETEZzgaClXWuPhuxXYuG5hGRHCAk6WIiIiIiIiIiPgU
+R0Oh/JJKggP8uGJQWyfLEBERERERERHxOY6GQrvKqhiVmULLiGAnyxARERERERER8TmOhkIWuHZw
+upMliIiIiIiIiIj4JEdDoRahgaTEhjlZgoiIiIiIiIiIT3I0FEqOUSAkIiIiIiIiIuIER0MhY5zc
+uoiIiIiIiIiI73I0FBIREREREREREWcoFBIRERERERER8UEKhUREREREREREfJBCIRERERERERER
+H6RQSERERERERETEBykUEhERERERERHxQQqFRERERERERER8kEIhEREREREREREfpFBIRERERERE
+RMQHKRQSEREREREREfFBCoVERERERERERHyQQiERERERERERER9krLXObdyYEmC1YwV4v1bADqeL
+8HJqo7qpfQ5MbVQ3tc+BqY3qpvY5MLVR3dQ+B6Y2qpva58DURnVT+xyY2qhuTrRPmrU27kB3CmiK
+Suqw2lqb6XANXssYM0/tUze1Ud3UPgemNqqb2ufA1EZ1U/scmNqobmqfA1Mb1U3tc2Bqo7qpfQ5M
+bVQ3b24fDR8TEREREREREfFBCoVERERERERERHyQ06HQSw5v39upfQ5MbVQ3tc+BqY3qpvY5MLVR
+3dQ+B6Y2qpva58DURnVT+xyY2qhuap8DUxvVzWvbx9GJpkVERERERERExBlO9xQSEREREREREREH
+KBQSEREREREREfFBCoVERERERETksBhjjNM1iMihUyh0BDPG6P/3IOlDTOpD+9ih0X72e8aYUKdr
+kCOH9rHfM8YkOV1Dc6K/obqpffbPGHMygNVktVJP+k598BrjfahZTjRtjDkTKASWWWt3OV2PNzLG
+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
 "
 >
 </div>
